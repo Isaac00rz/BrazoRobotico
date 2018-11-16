@@ -13,6 +13,7 @@ void setup() {
   servo2.attach(4);
   servo3.attach(5);
   servo4.attach(6);
+  servo5.attach(7);
 }
 
 void loop() {
