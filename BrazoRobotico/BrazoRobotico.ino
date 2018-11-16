@@ -13,6 +13,7 @@ void setup() {
   servo2.attach(4);
   servo3.attach(5);
   servo4.attach(6);
+  servo5.attach(7);
 }
 
 void loop() {
@@ -24,6 +25,7 @@ void loop() {
       i++;
     }
     if(instruccion[0] == '0'){
+      EEPROM.put(1000,'0');
       switch(instruccion[1]){
         case '1':
         moverServo1();
@@ -39,7 +41,7 @@ void loop() {
         break;
       }
       }else if(instruccion[0] == '1'){
-        
+        EEPROM.put(1000,'1');
         }
   }
 
@@ -47,41 +49,42 @@ void loop() {
 
 void moverServo1(){
   int valor = calValor(instruccion[2]);
-  int pos;
-  for (pos = 0; pos <= valor; pos += 1) 
-   {
-      servo1.write(pos);              
-      delay(15);                       
-   }
+  if(valor==60){
+    valor=64;
+  }else if(valor==110){
+    valor = 105;
+  }
+  servo1.write(valor);              
 }
 void moverServo2(){
   int valor = calValor(instruccion[2]);
-  int pos;
-  for (pos = 0; pos <= valor; pos += 1) 
-   {
-      servo2.write(pos);              
-      delay(15);                       
+  if(valor==60){
+    valor=64;
+  }else if(valor==110){
+    valor = 105;
+  }
+  servo1.write(valor);                       
    }
-}
+
 
 void moverServo3(){
   int valor = calValor(instruccion[2]);
-  int pos;
-  for (pos = 0; pos <= valor; pos += 1) 
-   {
-      servo3.write(pos);              
-      delay(15);                       
-   }
+  if(valor==60){
+    valor=64;
+  }else if(valor==110){
+    valor = 105;
+  }
+  servo1.write(valor);  
 }
 
 void moverServo4(){
   int valor = calValor(instruccion[2]);
-  int pos;
-  for (pos = 0; pos <= valor; pos += 1) 
-   {
-      servo4.write(pos);              
-      delay(15);                       
-   }
+  if(valor==60){
+    valor=64;
+  }else if(valor==110){
+    valor = 105;
+  }
+  servo1.write(valor);  
 }
 
 int calValor(char letra){
