@@ -4,7 +4,6 @@ import Interfaz.*;
 public class Main {
 
     public static void main(String[] args) {
-        //Interfaz escritorio = new Interfaz();
         Escritorio escritorio = new Escritorio();
         escritorio.setSize(800,700);
         escritorio.setVisible(true);
