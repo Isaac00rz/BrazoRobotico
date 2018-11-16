@@ -73,7 +73,6 @@ public class Escritorio extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == nuevo){
-            System.out.println("entro");
             Contenido contenido = new Contenido();
             frame = new JInternalFrame("Ventana "+count,true,true,true,true);
             frame.setSize(600,500);

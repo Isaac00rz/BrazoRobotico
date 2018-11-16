@@ -1,6 +1,6 @@
 package Interfaz;
 
-import Recursos.ConnectionPort;
+import Recursos.*;
 import com.panamahitek.PanamaHitek_Arduino;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -11,12 +11,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class Contenido extends JPanel implements ActionListener{
@@ -32,16 +34,21 @@ public class Contenido extends JPanel implements ActionListener{
     private Mouse mouseListener;
     private ConnectionPort connection;
     private PanamaHitek_Arduino ino;
-    
+    private JFileChooser chooser;
+    private Read reader;
+    private MovesValues moveValues;
     public Contenido (){
+        moveValues = new MovesValues();
+        reader = new Read();
+        chooser = new JFileChooser();
         connection = new ConnectionPort();
-        if(connection.connect()){
+        //if(connection.connect()){
             this.setLayout(new GridLayout(1,2));
             addSliders();
             addTable();
-        }else{
+        /*}else{
             JOptionPane.showMessageDialog(null, "No se ha podido comunicar con el puerto COM");
-        }
+        }*/
     }
     
     public void addSliders(){
@@ -162,6 +169,7 @@ public class Contenido extends JPanel implements ActionListener{
         borrar.addActionListener(this);
         
         importar = new JButton("Importar");
+        importar.addActionListener(this);
         
         JPanel tableButtonsPanel = new JPanel();
         tableButtonsPanel.add(guardar);
@@ -170,81 +178,6 @@ public class Contenido extends JPanel implements ActionListener{
         tableContent.add(tableButtonsPanel,BorderLayout.SOUTH);
         
         add(tableContent);
-    }
-    public int convertValue(int value){
-        if(value>0 && value<=10){
-            return 10;
-        }else if(value>10 && value<=20){
-            return 20;
-        }else if(value>20 && value<=30){
-            return 30;
-        }else if(value>30 && value<=40){
-            return 40;
-        }else if(value>40 && value<=50){
-            return 50;
-        }else if(value>50 && value<=60){
-            return 60;
-        }else if(value>60 && value<=70){
-            return 70;
-        }else if(value>70 && value<=80){
-            return 80;
-        }else if(value>80 && value<=90){
-            return 90;
-        }else if(value>90 && value<=100){
-            return 100;
-        }else if(value>100 && value<=110){
-            return 110;
-        }else if(value>110 && value<=120){
-            return 120;
-        }else if(value>120 && value<=130){
-            return 130;
-        }else if(value>130 && value<=140){
-            return 140;
-        }else if(value>140 && value<=150){
-            return 150;
-        }else if(value>150 && value<=160){
-            return 160;
-        }else if(value>160 && value<=170){
-            return 170;
-        }else if(value>170 && value<=180){
-            return 180;
-        }else if(value>180 && value<=190){
-            return 190;
-        }else if(value>190 && value<=200){
-            return 200;
-        }else if(value>200 && value<=210){
-            return 210;
-        }else if(value>210 && value<=220){
-            return 220;
-        }else if(value>220 && value<=230){
-            return 230;
-        }else if(value>230 && value<=240){
-            return 240;
-        }else if(value>240 && value<=250){
-            return 250;
-        }else if(value>250 && value<=260){
-            return 260;
-        }else if(value>260 && value<=270){
-            return 270;
-        }else if(value>270 && value<=280){
-            return 280;
-        }else if(value>280 && value<=290){
-            return 290;
-        }else if(value>290 && value<=300){
-            return 300;
-        }else if(value>300 && value<=310){
-            return 310;
-        }else if(value>310 && value<=320){
-            return 320;
-        }else if(value>320 && value<=330){
-            return 330;
-        }else if(value>330 && value<=340){
-            return 340;
-        }else if(value>340 && value<=350){
-            return 350;
-        }else if(value>350 && value<=360){
-            return 360;
-        }else{return 0;}
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -264,6 +197,29 @@ public class Contenido extends JPanel implements ActionListener{
                 if(movesTable.getSelectedRow() != -1){
                     moves.removeRow(movesTable.getSelectedRow());
                 }else{JOptionPane.showMessageDialog(null,"No se selecciono ninguna fila");}
+            }else if(e.getSource() == importar){
+                String text;
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Archivos de texto txt", "txt");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(null);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                   moves.setRowCount(0);
+                   text = reader.read(chooser.getSelectedFile().getAbsolutePath());
+                    Object [] data;
+                    for (int j = 1,i=0; j < text.length(); j+=2) {
+                        data = new Object[2];
+                        for (int k = 0; k < data.length; k++) {
+                            if(k == 1){
+                                data[k] = moveValues.convertToInt(text.charAt(j+k));
+                            }else{
+                                data[k] = text.charAt(j+k);
+                            }
+                        }
+                        moves.addRow(data);
+                    }
+                        
+                }
             }
     }
     
