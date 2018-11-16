@@ -1,15 +1,16 @@
 package Main;
-import Interfaz.Interfaz;
+import Interfaz.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        Interfaz frame = new Interfaz();
-        frame.setSize(700,600);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setTitle("Brazo robotico");
+        //Interfaz escritorio = new Interfaz();
+        Escritorio escritorio = new Escritorio();
+        escritorio.setSize(800,700);
+        escritorio.setVisible(true);
+        escritorio.setDefaultCloseOperation(escritorio.EXIT_ON_CLOSE);
+        escritorio.setLocationRelativeTo(null);
+        escritorio.setTitle("Brazo robotico");
     }
     
 }
