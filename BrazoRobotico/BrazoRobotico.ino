@@ -1,7 +1,7 @@
 #include<EEPROM.h>
 #include <Servo.h>
 
-int pinBoton = 3;
+int pinBoton = 2;
 Servo servo1;
 Servo servo2;
 Servo servo3;
@@ -11,7 +11,7 @@ char instruccion[61];
 
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(pinBoton),parar,LOW);
+  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,RISING);
   servo1.attach(4);
   servo2.attach(5);
   servo3.attach(6);
@@ -23,9 +23,9 @@ void loop() {
   int conLeer=0;
   int i = 0;
   int valAnterior = 1;
-  char modo[1];
+  char modo;
   EEPROM.get(1000,modo);
-  if(modo[0]=='1'){
+ /* if(modo=='1'){
     EEPROM.get(0,instruccion);
     EEPROM.get(1001,valAnterior);
     for(i=valAnterior;i<61;i++){
@@ -51,7 +51,7 @@ void loop() {
         }
       }
     }
-  }else{
+  }else if (modo=='0'){*/
     if(Serial.available()>0){
     delay(100);
     while(Serial.available()>0){
@@ -82,10 +82,11 @@ void loop() {
         EEPROM.put(0,instruccion);
       }
   }
- }
+ //}
 }
 
 void parar(void){
+  delay(1000);
   EEPROM.put(1000,'0');
   loop();
 }
@@ -127,62 +128,116 @@ void moverServo5(int ultimo){
 int calValor(char letra){
   int va = 0;
   switch(letra){
-    case 'A':
+    case 'a':
     va = 0;
     break;
-    case 'B':
+    case 'b':
     va = 10;
     break;
-    case 'C':
+    case 'c':
     va = 20;
     break;
-    case 'D':
+    case 'd':
     va = 30;
     break;
-    case 'E':
+    case 'e':
     va = 40;
     break;
-    case 'F':
+    case 'f':
     va = 50;
     break;
-    case 'G':
+    case 'g':
     va = 60;
     break;
-    case 'H':
+    case 'h':
     va = 70;
     break;
-    case 'I':
+    case 'i':
     va = 80;
     break;
-    case 'J':
+    case 'j':
     va = 90;
     break;
-    case 'K':
+    case 'k':
     va = 100;
     break;
-    case 'L':
+    case 'l':
     va = 110;
     break;
-    case 'M':
+    case 'm':
     va = 120;
     break;
-    case 'N':
+    case 'n':
     va = 130;
     break;
-    case 'O':
+    case 'o':
     va = 140;
     break;
-    case 'P':
+    case 'p':
     va = 150;
     break;
-    case 'Q':
+    case 'q':
     va = 160;
     break;
-    case 'R':
+    case 'r':
     va = 170;
     break;
-    case 'S':
+    case 's':
     va = 180;
+    break;
+    case 't':
+    va = 190;
+    break;
+    case 'u':
+    va = 200;
+    break;
+    case 'v':
+    va = 210;
+    break;
+    case 'x':
+    va = 220;
+    break;
+    case 'y':
+    va = 230;
+    break;
+    case 'z':
+    va = 240;
+    break;
+    case 'A':
+    va = 250;
+    break;
+    case 'B':
+    va = 260;
+    break;
+    case 'C':
+    va = 270;
+    break;
+    case 'D':
+    va = 280;
+    break;
+    case 'E':
+    va = 290;
+    break;
+    case 'F':
+    va = 300;
+    break;
+    case 'G':
+    va = 310;
+    break;
+    case 'H':
+    va = 320;
+    break;
+    case 'I':
+    va = 330;
+    break;
+    case 'J':
+    va = 340;
+    break;
+    case 'K':
+    va = 350;
+    break;
+    case 'L':
+    va = 360;
     break;
   }
   return va;

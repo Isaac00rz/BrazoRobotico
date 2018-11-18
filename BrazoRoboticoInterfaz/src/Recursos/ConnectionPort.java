@@ -21,7 +21,7 @@ public class ConnectionPort {
             // Conexion con puerto serial ubuntu
             //ino.arduinoRXTX("/dev/ttyUSB0", 9600, manejadorArduino); 
             // Conexion con puerto serial windows
-            ino.arduinoRXTX("COM3", 9600,arduinoListener);
+            ino.arduinoRXTX("COM4", 9600,arduinoListener);
             finishedConnection = true;
         } catch (ArduinoException ex) {
             finishedConnection = false;
