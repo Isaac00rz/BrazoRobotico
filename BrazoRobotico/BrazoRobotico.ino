@@ -11,12 +11,13 @@ char instruccion[61];
 
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,LOW);
+  pinMode(pinBoton,INPUT);
   servo1.attach(4);
   servo2.attach(5);
   servo3.attach(6);
   servo4.attach(7);
   servo5.attach(8);
+  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,RISING);
 }
 
 void loop() {
@@ -87,7 +88,7 @@ void loop() {
  }
 }
 
-void parar(void){
+void parar(){
   int sig;
   delay(1000);
   EEPROM.put(1000,'0');
