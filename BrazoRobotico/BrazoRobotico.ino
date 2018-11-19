@@ -11,7 +11,7 @@ char instruccion[61];
 
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,RISING);
+  //attachInterrupt(digitalPinToInterrupt(pinBoton), parar,RISING);
   servo1.attach(4);
   servo2.attach(5);
   servo3.attach(6);
@@ -23,13 +23,14 @@ void loop() {
   int conLeer=0;
   int i = 0;
   int valAnterior = 1;
-  char modo;
+  char modo[1];
   EEPROM.get(1000,modo);
- /* if(modo=='1'){
+  if(modo[0]=='1'){
     EEPROM.get(0,instruccion);
     EEPROM.get(1001,valAnterior);
-    for(i=valAnterior;i<61;i++){
+    for(i=valAnterior;i<61;i=i+2){
       if(instruccion[i] == '@'){
+        EEPROM.put(1001,1);
         break;
       }else{
         switch(instruccion[i]){
@@ -51,7 +52,7 @@ void loop() {
         }
       }
     }
-  }else if (modo=='0'){*/
+  }else if (modo[0]=='0'){
     if(Serial.available()>0){
     delay(100);
     while(Serial.available()>0){
@@ -62,67 +63,72 @@ void loop() {
       EEPROM.put(1000,'0');
       switch(instruccion[1]){
         case '1':
-        moverServo1(0);
+        moverServo1(1);
         break;
         case '2':
-        moverServo2(0);
+        moverServo2(1);
         break;
         case '3':
-        moverServo3(0);
+        moverServo3(1);
         break;
         case '4':
-        moverServo4(0);
+        moverServo4(1);
         break;
         case '5':
-        moverServo5(0);
+        moverServo5(1);
         break;
       }
       }else if(instruccion[0] == '1'){
         EEPROM.put(1000,'1');
+        EEPROM.put(1001,1);
         EEPROM.put(0,instruccion);
       }
   }
- //}
+ }
 }
 
 void parar(void){
   delay(1000);
   EEPROM.put(1000,'0');
-  loop();
 }
 
 void moverServo1(int ultimo){
-  int valor = calValor(instruccion[2]);
+  int valor = calValor(instruccion[ultimo+1]);
   servo1.write(valor);
-  EEPROM.put(1001,(ultimo+1));              
+  EEPROM.put(1001,(ultimo+2));              
+  delay(1000);
 }
 void moverServo2(int ultimo){
-  int valor = calValor(instruccion[2]);
+  int valor = calValor(instruccion[ultimo+1]);
   servo2.write(valor); 
-  EEPROM.put(1001,(ultimo+1));                        
+  EEPROM.put(1001,(ultimo+2));   
+  delay(1000);                     
 }
 
 
 void moverServo3(int ultimo){
-  int valor = calValor(instruccion[2]);
+  int valor = calValor(instruccion[ultimo+1]);
   servo3.write(valor);  
-  EEPROM.put(1001,(ultimo+1));  
+  EEPROM.put(1001,(ultimo+2));  
+  delay(1000);
 }
 
 void moverServo4(int ultimo){
-  int valor = calValor(instruccion[2]);
+  int valor = calValor(instruccion[ultimo+1]);
   servo4.write(valor);  
-  EEPROM.put(1001,(ultimo+1));  
+  EEPROM.put(1001,(ultimo+2));  
+  delay(100);
 }
 void moverServo5(int ultimo){
-  int valor = calValor(instruccion[2]);
+  int valor = calValor(instruccion[ultimo+1]);
   if(valor==60){
     valor=64;
   }else if(valor==110){
     valor = 105;
   }
   servo5.write(valor);  
-  EEPROM.put(1001,(ultimo+1));  
+  EEPROM.put(1001,(ultimo+2));  
+  delay(1000);
 }
 
 int calValor(char letra){
