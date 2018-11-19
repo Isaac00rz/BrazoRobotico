@@ -8,6 +8,8 @@ Servo servo3;
 Servo servo4;
 Servo servo5; 
 char instruccion[61];
+const int timeThreshold = 150;
+long timeCounter = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -17,7 +19,7 @@ void setup() {
   servo3.attach(6);
   servo4.attach(7);
   servo5.attach(8);
-  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,RISING);
+  attachInterrupt(digitalPinToInterrupt(pinBoton), parar,LOW);
 }
 
 void loop() {
@@ -90,10 +92,11 @@ void loop() {
 
 void parar(){
   int sig;
-  delay(1000);
-  EEPROM.put(1000,'0');
-  EEPROM.get(1001,sig);
-  instruccion[sig] = '@';
+  if(millis() > timeCounter + timeThreshold){
+    EEPROM.put(1000,'0');
+    EEPROM.get(1001,sig);
+    instruccion[sig] = '@';
+  }
   
 }
 
