@@ -34,7 +34,7 @@ void setup() {
   servo3.attach(6); // Codo.
   servo4.attach(7); //Muñeca.
   servo5.attach(8); //Pinza.
-  attachInterrupt(digitalPinToInterrupt(pinBoton), parar, LOW); //Si llega a suceder algo que no haga el brazo, cortamos el circuito por el pin 2 para detenerlo.
+  attachInterrupt(digitalPinToInterrupt(pinBoton), parar, HIGH); //Si llega a suceder algo que no haga el brazo, cortamos el circuito por el pin 2 para detenerlo.
 }
 
 void loop() {
@@ -125,7 +125,7 @@ void moverServo1(int ultimo) {
   int valor = calValor(instruccion[ultimo + 1]);
   servo1.write(valor);
   EEPROM.put(1001, (ultimo + 2));
-  delay(1500);
+  delay(1000);
   tone(buzzer, 500);
   delay(500);
   noTone(buzzer);
@@ -134,7 +134,7 @@ void moverServo2(int ultimo) {
   int valor = calValor(instruccion[ultimo + 1]);
   servo2.write(valor);
   EEPROM.put(1001, (ultimo + 2));
-  delay(1500);
+  delay(1000);
   digitalWrite(ledWh, HIGH);
   delay(500);
   tone(buzzer, 600);
@@ -146,7 +146,7 @@ void moverServo3(int ultimo) {
   int valor = calValor(instruccion[ultimo + 1]);
   servo3.write(valor);
   EEPROM.put(1001, (ultimo + 2));
-  delay(1500);
+  delay(1000);
   digitalWrite(ledGr, HIGH);
   delay(500);
   tone(buzzer, 700);
@@ -158,7 +158,7 @@ void moverServo4(int ultimo) {
   int valor = calValor(instruccion[ultimo + 1]);
   servo4.write(valor);
   EEPROM.put(1001, (ultimo + 2));
-  delay(1500);
+  delay(1000);
   digitalWrite(ledOr, HIGH);
   delay(500);
   tone(buzzer, 800);
@@ -174,7 +174,7 @@ void moverServo5(int ultimo) {
   }
   servo5.write(valor);
   EEPROM.put(1001, (ultimo + 2));
-  delay(1500);
+  delay(1000);
   digitalWrite(ledYe, HIGH);
   delay(500);
   tone(buzzer, 900);
