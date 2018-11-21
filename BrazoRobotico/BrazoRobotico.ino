@@ -1,3 +1,4 @@
+// Llamamos las librerías: EEPROM para modificar la memoria del Arduino. Servo para darle movimiento a cada uno de los que se utilizan.
 #include<EEPROM.h>
 #include <Servo.h>
 
@@ -9,7 +10,7 @@ const int ledGr = 10;
 const int ledOr = 11;
 const int ledYe = 12;
 const int ledRed = 4;
-// Declaramos los servos.
+// Declaramos los servos a utilizar.
 Servo servo1;
 Servo servo2;
 Servo servo3;
