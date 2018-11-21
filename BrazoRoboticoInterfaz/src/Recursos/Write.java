@@ -3,7 +3,7 @@ package Recursos;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+// Escritura en archivo de texto, para salvar los movimientos del brazo robotico.
 public class Write {
     private String text="";
     private String route;
@@ -20,8 +20,6 @@ public class Write {
             e.printStackTrace();
         } finally {
            try {
-           // Nuevamente aprovechamos el finally para 
-           // asegurarnos que se cierra el fichero.
            if (null != fichero)
               fichero.close();
            } catch (Exception e2) {

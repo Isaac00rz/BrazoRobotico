@@ -1,7 +1,13 @@
 package Main;
 
 import Interfaz.*;
-
+/*
+    Fecha: 20 de noviembre 2018
+    Integrantes:
+    Isaac Perez Segura
+    Cinthia Aidee Alvarez Castro
+    Isaac Ulises Hernandez Marquez
+*/
 public class Main {
 
     public static void main(String[] args) {

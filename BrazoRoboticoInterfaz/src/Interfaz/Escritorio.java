@@ -21,7 +21,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
+/*
+    Clase contenedora de toda la interfaz y la conexion al puerto COM
+*/
 public class Escritorio extends JFrame implements ActionListener{
     private JDesktopPane escritorio;
     private JInternalFrame frame;
@@ -32,6 +34,7 @@ public class Escritorio extends JFrame implements ActionListener{
     private BufferedImage img = null;
     private ConnectionPort connection;
     private boolean finishedConnection = false;
+    
     public Escritorio (){
         try {
             img = ImageIO.read(new File("src\\Imagenes\\linuxIcon.png"));
@@ -65,17 +68,19 @@ public class Escritorio extends JFrame implements ActionListener{
         menu.add(archivo);
         
         this.setJMenuBar(menu);
-        this.add(escritorio); 
+        this.add(escritorio);
+        // Se construye la conexion
         connection = new ConnectionPort();
         connection.connect();
     }
     @Override
     public void actionPerformed(ActionEvent e) {
+        //Si la conexion fracaso se intenta conectar de nuevo
         if(!connection.getConnectionStatus()){
             connection.connect();
         }
         if(e.getSource() == nuevo && connection.getConnectionStatus()){
-            Contenido contenido = new Contenido(connection.getConnection());
+            Ventana contenido = new Ventana(connection.getConnection());
             frame = new JInternalFrame("Ventana "+count,true,true,true,true);
             frame.setSize(1000,500);
             frame.setVisible(true);

@@ -24,8 +24,14 @@ import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import jssc.SerialPortException;
-
-public class Contenido extends JPanel implements ActionListener{
+/*
+    Clase contenedora de JSlider's que son de utilidad para asignar
+    un valor a cada servo ya sea en tiempo real ó cuando se desea
+    guardar una serie de movimientos (ese es el proposito de JTable).
+    Estas acciones son implementadas por medio de "ActionListener"
+    y "MouseListener".
+*/
+public class Ventana extends JPanel implements ActionListener{
     private JSlider servoUno;
     private JSlider servoDos;
     private JSlider servoTres;
@@ -45,7 +51,11 @@ public class Contenido extends JPanel implements ActionListener{
     private Write writer;
     private MovesValues moveValues;
     
-    public Contenido (PanamaHitek_Arduino com){
+    /*
+        Nuestro constructor requiere un objeto que contenga la conexion al puerto
+        COM
+    */
+    public Ventana (PanamaHitek_Arduino com){
         this.ino=com;
         mouseListener = new Mouse();
         moveValues = new MovesValues();
@@ -170,8 +180,6 @@ public class Contenido extends JPanel implements ActionListener{
         servoCincoBPanel.add(servoCincoB);
         servoCincoP.add(servoCincoBPanel);
         panelSliders.add(servoCincoP);
-        
-        
         JScrollPane sliderScroll = new JScrollPane(panelSliders
                 ,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -216,10 +224,12 @@ public class Contenido extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == borrar){
+            // Si se desea borrar algun movimiento de la tabla
             if(movesTable.getSelectedRow() != -1){
                 moves.removeRow(movesTable.getSelectedRow());
             }else{JOptionPane.showMessageDialog(null,"No se selecciono ninguna fila");}
         }else if(e.getSource() == importar){
+            // Si se desea importar un archivo de texto que contiene movimientos
             String text;
             FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "Archivos de texto txt", "txt");
@@ -243,6 +253,7 @@ public class Contenido extends JPanel implements ActionListener{
 
             }
         }else if(e.getSource() == guardarTexto){
+           // Si se desea salvar los movimientos en un archivo de texto
            FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "Archivos de texto .txt", "txt");
             chooser.setFileFilter(filter);
@@ -259,6 +270,10 @@ public class Contenido extends JPanel implements ActionListener{
                writer.write(data, chooser.getCurrentDirectory().getPath()+"\\"+nameFile);
            }
         }else if(e.getSource() == enviarArduino){
+            /* 
+                Si se desea guardar las instrucciones en arduino, para que este
+                las ejecute aun despues de haber sido apagado.
+            */
             try {
                 if(moves.getRowCount() > 0){
                     String data = "1";
@@ -276,6 +291,7 @@ public class Contenido extends JPanel implements ActionListener{
         }else if((e.getSource() == servoUnoB | e.getSource() == servoDosB 
                     | e.getSource() == servoTresB | e.getSource() == servoCuatroB
                     || e.getSource() == servoCincoB) && moves.getRowCount()<20){
+            //Si se desea agregar algun valor a la tabla de movimientos.
             if(e.getSource() == servoUnoB){
                 String [] data = {"1",Integer.toString(servoUno.getValue())};
                 moves.addRow(data);
@@ -311,40 +327,45 @@ public class Contenido extends JPanel implements ActionListener{
 
         @Override
         public void mouseReleased(MouseEvent e) {
+            /*
+                Si se realizo un cambiar al Slider este envia su valor
+                al instante al arduino (sin ser guardado en la memoria
+                EEPROM.
+            */
            if(e.getSource() == servoUno){
                try {
                    //System.out.println("01"+moveValues.convertToChar(servoUno.getValue()));
                    ino.sendData("01"+moveValues.convertToChar(servoUno.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
-                   Logger.getLogger(Contenido.class.getName()).log(Level.SEVERE, null, ex);
+                   Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                }
             }else if(e.getSource() == servoDos){
                 try {
                    System.out.println("02"+moveValues.convertToChar(servoDos.getValue()));
                    ino.sendData("02"+moveValues.convertToChar(servoDos.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
-                   Logger.getLogger(Contenido.class.getName()).log(Level.SEVERE, null, ex);
+                   Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                }
             }else if(e.getSource() == servoTres){
                try {
                    //System.out.println("03"+moveValues.convertToChar(servoTres.getValue()));
                    ino.sendData("03"+moveValues.convertToChar(servoTres.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
-                   Logger.getLogger(Contenido.class.getName()).log(Level.SEVERE, null, ex);
+                   Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                }
             }else if(e.getSource() == servoCuatro){
               try {
                    //System.out.println("04"+moveValues.convertToChar(servoCuatro.getValue()));
                    ino.sendData("04"+moveValues.convertToChar(servoCuatro.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
-                   Logger.getLogger(Contenido.class.getName()).log(Level.SEVERE, null, ex);
+                   Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                }
             }else if(e.getSource() == servoCinco){
               try {
                    //System.out.println("05"+moveValues.convertToChar(servoCinco.getValue()));
                    ino.sendData("05"+moveValues.convertToChar(servoCinco.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
-                   Logger.getLogger(Contenido.class.getName()).log(Level.SEVERE, null, ex);
+                   Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                }
             }
         }

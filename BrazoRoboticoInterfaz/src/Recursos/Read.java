@@ -2,7 +2,7 @@ package Recursos;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
+// Lectura de archivos de texto que contienen movimientos para el brazo
 public class Read {
     private String text="";
     private String route;
