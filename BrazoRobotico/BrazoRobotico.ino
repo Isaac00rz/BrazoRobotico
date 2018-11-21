@@ -17,7 +17,7 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 char instruccion[61];
-const int timeThreshold = 150;
+const int timeThreshold = 150; // costante para el rebote
 long timeCounter = 0;
 
 void setup() {
@@ -49,13 +49,13 @@ void loop() {
   int i = 0;
   int valAnterior = 1;
   char modo[1];
-  EEPROM.get(1000, modo);
-  if (modo[0] == '1') {
-    EEPROM.get(0, instruccion);
-    EEPROM.get(1001, valAnterior);
+  EEPROM.get(1000, modo);// En la posicion 1000 se guardara la variable para ver si el modo esta en automatico o de escucha
+  if (modo[0] == '1') { // Si el valor es 1 entonces esta en modo automatico
+    EEPROM.get(0, instruccion); // Se obtiene la cadena de instruccion de la posicion 0 en adelante
+    EEPROM.get(1001, valAnterior);// Se optiene el valor guardado en la posicion 1001, el cual tiene el movimiento en el que se quedo arduino, esto en caso de se le corte la energia a aurduino
     for (i = valAnterior; i < 61; i = i + 2) {
-      if (instruccion[i] == '@') {
-        EEPROM.put(1001, 1);
+      if (instruccion[i] == '@') {// Si se encuentra un @ quiere decir que es el fin de la instruccion
+        EEPROM.put(1001, 1);// ´por ende se pasa e valor anterior a 1
         break;
       } else {
         switch (instruccion[i]) {
@@ -77,14 +77,14 @@ void loop() {
         }
       }
     }
-  } else if (modo[0] == '0') {
+  } else if (modo[0] == '0') {// Si se optiene un 0 entonces es un movimiento de escucha, solo lo realizara sin guardar nada
     if (Serial.available() > 0) {
       delay(100);
       while (Serial.available() > 0) {
         instruccion[conLeer] = Serial.read();
         conLeer++;
       }
-      if (instruccion[0] == '0') {
+      if (instruccion[0] == '0') {//Cuando lee la cadena, si encuentra un 0 solo hace el movimiento
         EEPROM.put(1000, '0');
         switch (instruccion[1]) {
           case '1':
@@ -103,7 +103,7 @@ void loop() {
             moverServo5(1);
             break;
         }
-      } else if (instruccion[0] == '1') {
+      } else if (instruccion[0] == '1') {// Si encuentra un 1, lo guarda en la posicion 0, pone un 1 en la 1000 para que sepa que esta en modo automatico, y pone el movimiento anterior en 1
         EEPROM.put(1000, '1');
         EEPROM.put(1001, 1);
         EEPROM.put(0, instruccion);
@@ -114,18 +114,18 @@ void loop() {
 
 void parar() {
   int sig;
-  if (millis() > timeCounter + timeThreshold) {
-    EEPROM.put(1000, '0');
-    EEPROM.get(1001, sig);
-    instruccion[sig] = '@';
+  if (millis() > timeCounter + timeThreshold) {//Rebote
+    EEPROM.put(1000, '0');//Se pone un 0 para que entre en modo escucha
+    EEPROM.get(1001, sig);// Se optiene la posicion del siguiente movimiento
+    instruccion[sig] = '@';// Se pone un @ en la siguiente posicion para que pare de hacer movimientos
     digitalWrite(ledRed, HIGH);
   }
 }
 
 void moverServo1(int ultimo) {
-  int valor = calValor(instruccion[ultimo + 1]);
-  servo1.write(valor);
-  EEPROM.put(1001, (ultimo + 2));
+  int valor = calValor(instruccion[ultimo + 1]);// se calcula el valor que representa el char
+  servo1.write(valor);// Se le manda al servo
+  EEPROM.put(1001, (ultimo + 2));// Se guarda el movimiento, para saber en el que se queda en caso de apagado
   delay(1000);
   tone(buzzer, 500);
   delay(500);
