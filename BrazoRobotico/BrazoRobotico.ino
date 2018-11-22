@@ -11,13 +11,15 @@ const int ledGr =  A1; //servo3.
 const int ledOr =  A2; //servo4.
 const int ledYe =  A3; //servo5.
 const int ledRed = A4; //motor pasos.
+
 // Declaración de variables para el motor paso a paso.
 const int motorN1 = 9;    // Amarillo In1
 const int motorN2 = 10;    // Azul In2
 const int motorN3 = 11;   // Naranja In3
 const int motorN4 = 12;   // Verde In4
 
-const int algo = 0;
+int valorActual= 0; //valor inicial del motor.
+int conteoStep= 0; //contador para el motor.
 int motorSpd = 1200; //Se fija una velocidad.
 int stepsPerRev = 4096; //Pasos para una vuelta completa.
 //estilo de secuencia: media fase.
@@ -173,11 +175,29 @@ void moverServo1(int ultimo) {
      donde "?" es el valor que debe tomar el motor para que gire
      al grado ingresado en el programa.
   */
-  int valorMotor = ((valor * stepsPerRev) / 360); //declaramos nuestra variable nueva.
+  
+  int valorNuevo;
+  valorNuevo= ((valor * stepsPerRev) / 360); //declaramos nuestra variable nueva.
   //setSalida contiene el write de los 4 pines utilizados en el arduino para modificar
   // el motor a pasos.
-  setSalidaMotor(valorMotor);
-  delayMicroseconds(motorSpd);
+  if(valorNuevo >= valorActual)
+  {
+     for(int i = valorActual; i < valorNuevo; i++)
+     {
+      manecillasReloj();
+      Serial.println(i);
+      delayMicroseconds(motorSpd);
+     }
+  }else 
+  {
+    for (int i = valorActual; i > valorNuevo; i--)
+    {
+      manecillasRelojInversa();
+      Serial.println(i);
+      delayMicroseconds(motorSpd);
+    }
+  }
+  valorActual = valorNuevo;
   // Se guarda el movimiento, para saber en el que se queda en caso de apagado.
   EEPROM.put(1001, (ultimo + 2));
   delay(1000);
@@ -186,12 +206,26 @@ void moverServo1(int ultimo) {
   noTone(buzzer);
 }
 
-void setSalidaMotor(int cont)
+void manecillasReloj(){
+  //Aumentar el contador de pasos
+  conteoStep++;
+  if (conteoStep >= numSteps) conteoStep = 0;
+  setSalidaMotor(conteoStep);
+}
+ //Método para girar el motor a pasos en sentido contrario a las manecillas del reloj
+void manecillasRelojInversa(){
+  //Disminuir el contador de pasos
+  conteoStep--;
+  if (conteoStep < 0) conteoStep = numSteps - 1;
+  setSalidaMotor(conteoStep);
+}
+
+void setSalidaMotor(int step)
 {
-  digitalWrite(motorN1, bitRead(stepsLookup[cont], 0));
-  digitalWrite(motorN2, bitRead(stepsLookup[cont], 1));
-  digitalWrite(motorN3, bitRead(stepsLookup[cont], 2));
-  digitalWrite(motorN4, bitRead(stepsLookup[cont], 3));
+  digitalWrite(motorN1, bitRead(stepsLookup[step], 0));
+  digitalWrite(motorN2, bitRead(stepsLookup[step], 1));
+  digitalWrite(motorN3, bitRead(stepsLookup[step], 2));
+  digitalWrite(motorN4, bitRead(stepsLookup[step], 3));
 }
 
 void moverServo2(int ultimo) {

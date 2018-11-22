@@ -334,7 +334,7 @@ public class Ventana extends JPanel implements ActionListener{
             */
            if(e.getSource() == servoUno){
                try {
-                   //System.out.println("01"+moveValues.convertToChar(servoUno.getValue()));
+                   System.out.println("01"+moveValues.convertToChar(servoUno.getValue()));
                    ino.sendData("01"+moveValues.convertToChar(servoUno.getValue()));
                } catch (ArduinoException | SerialPortException ex) {
                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
