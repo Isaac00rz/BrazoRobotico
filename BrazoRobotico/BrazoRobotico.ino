@@ -14,14 +14,14 @@ const int ledRed = A4; //motor pasos.
 
 // Declaración de variables para el motor paso a paso.
 const int motorN1 = 9;    // Amarillo In1
-const int motorN2 = 10;    // Azul In2
+const int motorN2 = 10;   // Azul In2
 const int motorN3 = 11;   // Naranja In3
 const int motorN4 = 12;   // Verde In4
 
 int valorActual= 0; //valor inicial del motor.
 int conteoStep= 0; //contador para el motor.
 int motorSpd = 1200; //Se fija una velocidad.
-int stepsPerRev = 4096; //Pasos para una vuelta completa.
+int stepsPerRev = 4076; //Pasos para una vuelta completa.
 //estilo de secuencia: media fase.
 const int numSteps = 8; //Número de pasos para el motor.
 const int stepsLookup[8] = { B1000, B1100, B0100, B0110, B0010, B0011, B0001, B1001 };
@@ -54,6 +54,10 @@ void setup() {
   pinMode(motorN2, OUTPUT);
   pinMode(motorN3, OUTPUT);
   pinMode(motorN4, OUTPUT);
+  digitalWrite(motorN1, bitRead(stepsLookup[0], 0));
+  digitalWrite(motorN2, bitRead(stepsLookup[0], 1));
+  digitalWrite(motorN3, bitRead(stepsLookup[0], 2));
+  digitalWrite(motorN4, bitRead(stepsLookup[0], 3));
   //Indicamos a todos los servos el pin PWM que utilizan.
   servo2.attach(5); // Cadera.
   servo3.attach(6); // Codo.
@@ -175,27 +179,35 @@ void moverServo1(int ultimo) {
      donde "?" es el valor que debe tomar el motor para que gire
      al grado ingresado en el programa.
   */
-  
   int valorNuevo;
-  valorNuevo= ((valor * stepsPerRev) / 360); //declaramos nuestra variable nueva.
+  valorNuevo= ((stepsPerRev / 360) * valor); //declaramos nuestra variable nueva.
   //setSalida contiene el write de los 4 pines utilizados en el arduino para modificar
   // el motor a pasos.
-  if(valorNuevo >= valorActual)
+  /* Procedimiento de valores:
+    En un inicio, el valorActual es 0. Cuando se ingrese el valorNuevo va a comparar con
+    el valor anterior, si es mayor entonces se moverá a la derecha. Si es menor entonces
+    se moverá hacia la izquierda.
+  */
+  if(valorNuevo >= valorActual) 
   {
+     digitalWrite(ledRed, HIGH);
      for(int i = valorActual; i < valorNuevo; i++)
      {
       manecillasReloj();
-      Serial.println(i);
       delayMicroseconds(motorSpd);
+      
      }
+     digitalWrite(ledRed, LOW);
   }else 
   {
+    digitalWrite(ledRed, HIGH);
     for (int i = valorActual; i > valorNuevo; i--)
     {
       manecillasRelojInversa();
-      Serial.println(i);
       delayMicroseconds(motorSpd);
+      
     }
+    digitalWrite(ledRed, LOW);
   }
   valorActual = valorNuevo;
   // Se guarda el movimiento, para saber en el que se queda en caso de apagado.
@@ -209,14 +221,15 @@ void moverServo1(int ultimo) {
 void manecillasReloj(){
   //Aumentar el contador de pasos
   conteoStep++;
-  if (conteoStep >= numSteps) conteoStep = 0;
+  //Si es mayor el conteo al step(que es 8) entonces se vuelve 0.
+  if (conteoStep >= numSteps) conteoStep = 0; 
   setSalidaMotor(conteoStep);
 }
  //Método para girar el motor a pasos en sentido contrario a las manecillas del reloj
 void manecillasRelojInversa(){
   //Disminuir el contador de pasos
   conteoStep--;
-  if (conteoStep < 0) conteoStep = numSteps - 1;
+  if (conteoStep < 0) conteoStep = numSteps - 1; 
   setSalidaMotor(conteoStep);
 }
 
