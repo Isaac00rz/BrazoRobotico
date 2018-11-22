@@ -1,41 +1,65 @@
-// Llamamos las librerías: EEPROM para modificar la memoria del Arduino. Servo para darle movimiento a cada uno de los que se utilizan.
+// Llamamos las librerías: EEPROM para modificar la memoria del Arduino.
+//Servo para darle movimiento a cada uno de los que se utilizan.
 #include<EEPROM.h>
 #include <Servo.h>
 
 const int pinBoton = 2; //Botón de paro.
 const int buzzer = 13;
-// Leds que nos ayudarán a saber qué servo se está moviendo.
-const int ledWh = 9;
-const int ledGr = 10;
-const int ledOr = 11;
-const int ledYe = 12;
-const int ledRed = 4;
-// Declaramos los servos a utilizar.
-Servo servo1;
+// Declaración de leds.
+const int ledWh =  A0; //servo2.
+const int ledGr =  A1; //servo3.
+const int ledOr =  A2; //servo4.
+const int ledYe =  A3; //servo5.
+const int ledRed = A4; //motor pasos.
+// Declaración de variables para el motor paso a paso.
+const int motorN1 = 9;    // Amarillo In1
+const int motorN2 = 10;    // Azul In2
+const int motorN3 = 11;   // Naranja In3
+const int motorN4 = 12;   // Verde In4
+
+const int algo = 0;
+int motorSpd = 1200; //Se fija una velocidad.
+int stepsPerRev = 4096; //Pasos para una vuelta completa.
+//estilo de secuencia: media fase.
+const int numSteps = 8; //Número de pasos para el motor.
+const int stepsLookup[8] = { B1000, B1100, B0100, B0110, B0010, B0011, B0001, B1001 };
+
+// Declaración de micro servos a utilizar.
 Servo servo2;
 Servo servo3;
 Servo servo4;
 Servo servo5;
 char instruccion[61];
-const int timeThreshold = 150; // costante para el rebote
+const int timeThreshold = 150; // Costante para el rebote.
 long timeCounter = 0;
 
 void setup() {
   Serial.begin(9600);
+  // El botón recibe una entrada; el buzzer recibe una salida.
   pinMode(pinBoton, INPUT);
   pinMode(buzzer, OUTPUT);
+  //Cuando inicializa el programa, no debe escucharse el buzzer.
   noTone(buzzer);
+  // Todos nuestros leds estarán en modo salida.
   pinMode(ledWh, OUTPUT);
   pinMode(ledGr, OUTPUT);
   pinMode(ledOr, OUTPUT);
   pinMode(ledYe, OUTPUT);
   pinMode(ledRed, OUTPUT);
-  servo1.attach(4); //Servo 360.
+  // Cuando inicializa, todos nuestros pines para controlar el
+  // motor a pasos son de salida.
+  pinMode(motorN1, OUTPUT);
+  pinMode(motorN2, OUTPUT);
+  pinMode(motorN3, OUTPUT);
+  pinMode(motorN4, OUTPUT);
+  //Indicamos a todos los servos el pin PWM que utilizan.
   servo2.attach(5); // Cadera.
   servo3.attach(6); // Codo.
   servo4.attach(7); //Muñeca.
   servo5.attach(8); //Pinza.
-  attachInterrupt(digitalPinToInterrupt(pinBoton), parar, HIGH); //Si llega a suceder algo que no haga el brazo, cortamos el circuito por el pin 2 para detenerlo.
+  //Si llega a suceder algo que no haga el brazo,
+  //cortamos el circuito por el pin 2 para detenerlo.
+  attachInterrupt(digitalPinToInterrupt(pinBoton), parar, HIGH);
 }
 
 void loop() {
@@ -49,18 +73,24 @@ void loop() {
   int i = 0;
   int valAnterior = 1;
   char modo[1];
-  EEPROM.get(1000, modo);// En la posicion 1000 se guardara la variable para ver si el modo esta en automatico o de escucha
+  // En la posicion 1000 se guardara la variable para ver si
+  //el modo esta en automatico o de escucha
+  EEPROM.get(1000, modo);
   if (modo[0] == '1') { // Si el valor es 1 entonces esta en modo automatico
-    EEPROM.get(0, instruccion); // Se obtiene la cadena de instruccion de la posicion 0 en adelante
-    EEPROM.get(1001, valAnterior);// Se optiene el valor guardado en la posicion 1001, el cual tiene el movimiento en el que se quedo arduino, esto en caso de se le corte la energia a aurduino
+    // Se obtiene la cadena de instruccion de la posicion 0 en adelante
+    EEPROM.get(0, instruccion);
+    // Se optiene el valor guardado en la posicion 1001, el cual tiene el
+    //movimiento en el que se quedo arduino, esto en caso de se le corte la energia a aurduino.
+    EEPROM.get(1001, valAnterior);
     for (i = valAnterior; i < 61; i = i + 2) {
-      if (instruccion[i] == '@') {// Si se encuentra un @ quiere decir que es el fin de la instruccion
-        EEPROM.put(1001, 1);// ´por ende se pasa e valor anterior a 1
+      // Si se encuentra un @ quiere decir que es el fin de la instruccion
+      if (instruccion[i] == '@') {
+        EEPROM.put(1001, 1);// ´por ende se pasa del valor anterior a 1
         break;
       } else {
         switch (instruccion[i]) {
           case '1':
-            moverServo1(i);
+            moverServo1(1);
             break;
           case '2':
             moverServo2(i);
@@ -77,7 +107,7 @@ void loop() {
         }
       }
     }
-  } else if (modo[0] == '0') {// Si se optiene un 0 entonces es un movimiento de escucha, solo lo realizara sin guardar nada
+  } else if (modo[0] == '0') {// Si se obtiene un 0 entonces es un movimiento de escucha, solo lo realizará sin guardar nada.
     if (Serial.available() > 0) {
       delay(100);
       while (Serial.available() > 0) {
@@ -103,7 +133,10 @@ void loop() {
             moverServo5(1);
             break;
         }
-      } else if (instruccion[0] == '1') {// Si encuentra un 1, lo guarda en la posicion 0, pone un 1 en la 1000 para que sepa que esta en modo automatico, y pone el movimiento anterior en 1
+        // Si encuentra un 1, lo guarda en la posicion 0, pone un 1 en
+        //la 1000 para que sepa que esta en modo automatico, y pone
+        //el movimiento anterior en 1.
+      } else if (instruccion[0] == '1') {
         EEPROM.put(1000, '1');
         EEPROM.put(1001, 1);
         EEPROM.put(0, instruccion);
@@ -115,22 +148,52 @@ void loop() {
 void parar() {
   int sig;
   if (millis() > timeCounter + timeThreshold) {//Rebote
-    EEPROM.put(1000, '0');//Se pone un 0 para que entre en modo escucha
-    EEPROM.get(1001, sig);// Se optiene la posicion del siguiente movimiento
-    instruccion[sig] = '@';// Se pone un @ en la siguiente posicion para que pare de hacer movimientos
+    //Se pone un 0 para que entre en modo escucha
+    EEPROM.put(1000, '0');
+    // Se optiene la posicion del siguiente movimiento
+    EEPROM.get(1001, sig);
+    // Se pone un @ en la siguiente posicion para que pare de hacer movimientos
+    instruccion[sig] = '@';
     digitalWrite(ledRed, HIGH);
   }
 }
 
 void moverServo1(int ultimo) {
-  int valor = calValor(instruccion[ultimo + 1]);// se calcula el valor que representa el char
-  servo1.write(valor);// Se le manda al servo
-  EEPROM.put(1001, (ultimo + 2));// Se guarda el movimiento, para saber en el que se queda en caso de apagado
+  // se calcula el valor que representa el char
+  int valor = calValor(instruccion[ultimo + 1]);
+  // calculamos el nuevo valor para el motor.
+  /* Recordando que:
+     4096, que es stepsPerRev, es un giro de 360 grados para un motor.
+     Entonces, para darle un valor al motor no debe ser
+     el valor que obtenemos del char, sino que debemos
+     transformarlo a un valor que acepte el motor entre 0 y 4096.
+     Esto se puede sacar con una regla de 3.
+         360 grados - 4096 del motor.
+         valor      - ?
+     donde "?" es el valor que debe tomar el motor para que gire
+     al grado ingresado en el programa.
+  */
+  int valorMotor = ((valor * stepsPerRev) / 360); //declaramos nuestra variable nueva.
+  //setSalida contiene el write de los 4 pines utilizados en el arduino para modificar
+  // el motor a pasos.
+  setSalidaMotor(valorMotor);
+  delayMicroseconds(motorSpd);
+  // Se guarda el movimiento, para saber en el que se queda en caso de apagado.
+  EEPROM.put(1001, (ultimo + 2));
   delay(1000);
   tone(buzzer, 500);
   delay(500);
   noTone(buzzer);
 }
+
+void setSalidaMotor(int cont)
+{
+  digitalWrite(motorN1, bitRead(stepsLookup[cont], 0));
+  digitalWrite(motorN2, bitRead(stepsLookup[cont], 1));
+  digitalWrite(motorN3, bitRead(stepsLookup[cont], 2));
+  digitalWrite(motorN4, bitRead(stepsLookup[cont], 3));
+}
+
 void moverServo2(int ultimo) {
   int valor = calValor(instruccion[ultimo + 1]);
   servo2.write(valor);
@@ -183,6 +246,7 @@ void moverServo5(int ultimo) {
   noTone(buzzer);
 }
 
+//Valores dados a cada servo por medio de char.
 int calValor(char letra) {
   int va = 0;
   switch (letra) {
