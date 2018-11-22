@@ -290,7 +290,7 @@ public class Ventana extends JPanel implements ActionListener{
             }
         }else if((e.getSource() == servoUnoB | e.getSource() == servoDosB 
                     | e.getSource() == servoTresB | e.getSource() == servoCuatroB
-                    || e.getSource() == servoCincoB) && moves.getRowCount()<20){
+                    || e.getSource() == servoCincoB) && moves.getRowCount()<498){
             //Si se desea agregar algun valor a la tabla de movimientos.
             if(e.getSource() == servoUnoB){
                 String [] data = {"1",Integer.toString(servoUno.getValue())};

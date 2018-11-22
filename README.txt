@@ -29,8 +29,10 @@ Materiales a utilizar:
 
 Nota Importante:
 	Antes de hacer el funcionamiento, se debe pasar el
-	programa al arduino uno para que todo vaya a la
-	perfección.
+	programa llamado inicio a arduino para preparar la 
+	memoria EPROMM.
+
+	El limite de movimientos que se pueden almacenar son 498.
 
 Funcionamiento:
 	El brazo robótico estará en modo standby al momento

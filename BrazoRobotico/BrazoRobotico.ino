@@ -31,7 +31,7 @@ Servo servo2;
 Servo servo3;
 Servo servo4;
 Servo servo5;
-char instruccion[61];
+char instruccion[998];
 const int timeThreshold = 150; // Costante para el rebote.
 long timeCounter = 0;
 
